@@ -2,6 +2,7 @@ from flask import Flask, jsonify, request
 from src.gemini_utils import gemini_for_chatbot, get_gemini_response
 from src.imagen import get_imagen_images
 from src.prompts import CAPTION_PROMPT, get_imagen_stage_prompt
+from src.flow_after_imagegen import flow
 
 app = Flask(__name__)
 
@@ -63,6 +64,8 @@ def initial_prompt():
 
     get_imagen_images(prompt3)
 
+    #to be called for final json array of all generated images flow(images,product_images,user_gen_id) (generated_imgs_urls,product_images,user_gen_id)
+    
     return jsonify({'message': 'Initial prompt received', 'image_path': image_path, 'response': response, 'response2': response2, 'final_prompt': prompt3})
 
     # return jsonify({'message': 'Image path received', 'image_path': image_path, 'response': response})

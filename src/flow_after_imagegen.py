@@ -30,14 +30,18 @@ def flow(images,product_images,user_gen_id):
         "banner_boudingbox_path":"",
         "top_colors":""
         }
+
+        # Product recognition from generated image 
         recognized_pdt = product_recog(img_url,user_gen_id)
+
+        # bouding box retrieval of product recognized image
         pdt_bb = get_bb(recognized_pdt,user_gen_id)
 
-        # embedding product
+        # embedding original product to generated banner 
         banner = embed_images_within_bboxes(recognized_pdt,product_images,pdt_bb,user_gen_id)
         obj['banner_path'] = banner
 
-        # bouding box trasnitin image
+        # bouding box transition (adding outline border to showcase transition of object detection)
         bb_box_banner = f"bb_baner_{user_gen_id}"
         draw_bounding_boxes_with_outline(recognized_pdt,pdt_bb,bb_box_banner)
         obj['banner_boudingbox_path'] = bb_box_banner
