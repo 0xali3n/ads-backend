@@ -12,44 +12,58 @@ os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
 
 
 def get_imagen_images(prompt):
-    vertexai.init(project=PROJECT_ID, location="us-central1")
+    try:
 
-    print("Init success")
+        vertexai.init(project=PROJECT_ID, location="us-central1")
 
-    model = ImageGenerationModel.from_pretrained("imagen-3.0-generate-001")
+        print("Init success")
 
-    print("Model loaded")
+        model = ImageGenerationModel.from_pretrained("imagen-3.0-generate-001")
 
-    print("Prompt: ", prompt)
+        print("Model loaded")
 
-    images = model.generate_images(
-        prompt=prompt,
-        # Optional parameters
-        number_of_images=4,
-        language="en",
-        # You can't use a seed value and watermark at the same time.
-        # add_watermark=False,
-        # seed=100,
-        aspect_ratio="1:1",
-        safety_filter_level="block_some",
-        person_generation="allow_adult",
-    )
+        print("Prompt: ", prompt)
 
-    print("Images generated")
+        images = model.generate_images(
+            prompt=prompt,
+            # Optional parameters
+            number_of_images=4,
+            language="en",
+            # You can't use a seed value and watermark at the same time.
+            # add_watermark=False,
+            # seed=100,
+            aspect_ratio="1:1",
+            safety_filter_level="block_some",
+            person_generation="allow_adult",
+        )
 
-    images[0].save(location="output_file_1.png",
-                   include_generation_parameters=False)
-    images[1].save(location="output_file_2.png",
-                   include_generation_parameters=False)
-    images[2].save(location="output_file_3.png",
-                   include_generation_parameters=False)
-    images[3].save(location="output_file_4.png",
-                   include_generation_parameters=False)
+        print("Images generated")
 
-    # Optional. View the generated image in a notebook.
-    # images[0].show()
+        # images[0].save(location="output_file_festival_holi_1.png",
+        #                include_generation_parameters=False)
+        # images[1].save(location="output_file_festival_holi_2.png",
+        #                include_generation_parameters=False)
+        # images[2].save(location="output_file_festival_holi_3.png",
+        #                include_generation_parameters=False)
+        # images[3].save(location="output_file_festival_holi__4.png",
+        #                include_generation_parameters=False)
 
-    print(f"Created output image using {len(images[0]._image_bytes)} bytes")
-    print(f"Created output image using {len(images[1]._image_bytes)} bytes")
-    print(f"Created output image using {len(images[2]._image_bytes)} bytes")
-    print(f"Created output image using {len(images[3]._image_bytes)} bytes")
+        # Optional. View the generated image in a notebook.
+        # images[0].show()
+        s3_imgs = []
+        for image in images:
+            # save the image in s3
+            s3_imgs.append(image._image_bytes)
+
+        # print(
+        #     f"Created output image using {len(images[0]._image_bytes)} bytes")
+        # print(
+        #     f"Created output image using {len(images[1]._image_bytes)} bytes")
+        # print(
+        #     f"Created output image using {len(images[2]._image_bytes)} bytes")
+        # print(
+        #     f"Created output image using {len(images[3]._image_bytes)} bytes")
+        return {"success": True, "code": 200, "message": "Images generated", "images": s3_imgs}
+    except Exception as e:
+        print(f"Error: {e}")
+        return {"success": True, "code": 200, "message": "Images generated"}

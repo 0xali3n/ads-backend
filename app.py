@@ -19,6 +19,9 @@ def initial_prompt():
     data = request.get_json()
     image_path = data.get('image_path')
 
+    # get example image from s3
+    # store it at "image_path" if s3 link doesn't work
+
     if not image_path:
         return jsonify({'error': 'Image path is required'}), 400
 
@@ -33,11 +36,11 @@ def initial_prompt():
     colors_used = response.get('colors_used')
 
     stage_1_prompt = get_imagen_stage_prompt(
-        color_scheme=colors_used,
-        offer="15% off",
+        color_scheme=colors_used,  # from request body.colors_pallete + colors_used
+        offer="15% off",  # from request body
+        theme="Holi",  # from request body
         product_name=product_name,
         product_description=product_description,
-        theme="Independence Day of India",
         stage=1
     )
 
@@ -45,13 +48,13 @@ def initial_prompt():
 
     prompt3 = get_imagen_stage_prompt(
         color_scheme=colors_used,
-        offer="15% off",
         product_name=product_name,
         product_description=response2,
-        theme="Independence Day of India",
-        stage=2,
+        offer="15% off",
+        theme="Holi",
         user_target="families",
         user_prompt="a playful, vibrant design",
+        stage=2,
     )
 
     print("Got final prompt")

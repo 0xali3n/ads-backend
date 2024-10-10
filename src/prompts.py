@@ -18,8 +18,8 @@ Output should be in JSON format with following keys:
 '''
 
 
-def get_imagen_stage_prompt(theme: str, offer: str, product_name: str, product_description: str, color_scheme: str, stage: int, tagline="", user_prompt="", user_target=""):
-
+def get_imagen_stage_prompt(theme: str, offer: str, product_name: str, product_description: str, color_scheme: list[str], stage: int, tagline="", user_prompt="", user_target=""):
+    all_colors = ", ".join(color_scheme)
     if (not theme or theme == ""):
         theme = """Modern Seasonal Celebration' theme. This theme should:
 Incorporate abstract, geometric representations of seasonal elements. For example:
@@ -38,7 +38,7 @@ This fallback theme should create a visually appealing, versatile backdrop that 
 Create a detailed prompt for an AI image generator to produce a visually striking, theme-oriented product banner for {product_name} brand. The theme is {theme} Incorporate the following elements:
 Product and theme description: {product_description}
 Enhanced themed offer: {offer}
-Color palette: {color_scheme}
+Color palette: {all_colors}
 Guidelines for the prompt:
 Describe the desired layout and composition of the banner, emphasizing how it should prominently feature key symbols and colors associated with the theme (e.g., for Independence Day of India, include the Indian flag, saffron, white, and green colors, and patriotic symbols)
 Specify how the product should be portrayed in relation to the theme, integrating it seamlessly with thematic elements
