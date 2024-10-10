@@ -2,7 +2,8 @@ import cv2
 import numpy as np
 from PIL import Image
 
-def embed_images_within_bboxes(base_image_path, embedding_image_paths, bboxes,user_gen_id):
+
+def embed_images_within_bboxes(base_image_path, embedding_image_paths, bboxes, user_gen_id):
     # Load base image
     base_image = cv2.imread(base_image_path)
 
@@ -34,17 +35,20 @@ def embed_images_within_bboxes(base_image_path, embedding_image_paths, bboxes,us
         # Resize the embedding image without distorting (keeping aspect ratio)
         new_width = int(img_width * scale_factor)
         new_height = int(img_height * scale_factor)
-        resized_embedding_image = embedding_image.resize((new_width, new_height), Image.LANCZOS)
+        resized_embedding_image = embedding_image.resize(
+            (new_width, new_height), Image.LANCZOS)
 
         # Calculate center position for the image to be placed in bounding box
         offset_x = x + (bbox_width - new_width) // 2
         offset_y = y + (bbox_height - new_height) // 2
 
         # Convert resized image to OpenCV format
-        resized_embedding_image_cv = cv2.cvtColor(np.array(resized_embedding_image), cv2.COLOR_RGB2BGR)
+        resized_embedding_image_cv = cv2.cvtColor(
+            np.array(resized_embedding_image), cv2.COLOR_RGB2BGR)
 
         # Overlay the resized image on the base image
-        base_image[offset_y:offset_y+new_height, offset_x:offset_x+new_width] = resized_embedding_image_cv
+        base_image[offset_y:offset_y+new_height,
+                   offset_x:offset_x+new_width] = resized_embedding_image_cv
 
     # Save the final result or display it
     cv2.imwrite('output_image.jpg', base_image)
@@ -52,15 +56,15 @@ def embed_images_within_bboxes(base_image_path, embedding_image_paths, bboxes,us
     final_banner = f'output_image_{user_gen_id}.jpg'
     return final_banner
 
-import cv2
 
 def crop_image_with_bbox(image_path, bbox, output_path):
     # Load the image
     image = cv2.imread(image_path)
     if image is None:
-        print(f"Error: Unable to load image at {image_path}. Check the file path.")
+        print(
+            f"Error: Unable to load image at {image_path}. Check the file path.")
         return
-    
+
     # Bounding box coordinates (x, y, width, height)
     x, y, bbox_width, bbox_height = bbox
 
@@ -73,18 +77,17 @@ def crop_image_with_bbox(image_path, bbox, output_path):
 
 
 # bbox = (100, 50, 200, 150)  # (x, y, width, height)
-# crop_image_with_bbox('base_image.jpg', 
-#                      bbox, 
+# crop_image_with_bbox('base_image.jpg',
+#                      bbox,
 #                      'cropped_output.jpg')
 
-
-import cv2
 
 def draw_bounding_boxes_with_outline(image_path, bboxes, output_path):
     # Load the image
     image = cv2.imread(image_path)
     if image is None:
-        print(f"Error: Unable to load image at {image_path}. Check the file path.")
+        print(
+            f"Error: Unable to load image at {image_path}. Check the file path.")
         return
 
     # Define a set of colors for each product (RGB)
@@ -95,23 +98,25 @@ def draw_bounding_boxes_with_outline(image_path, bboxes, output_path):
         (0, 255, 255),  # Yellow
         (255, 0, 255),  # Magenta
         (255, 255, 0),  # Cyan
-        (255, 255, 255) # White
+        (255, 255, 255)  # White
     ]
-    
+
     # Iterate over bounding boxes
     for i, bbox in enumerate(bboxes):
         x, y, bbox_width, bbox_height = bbox
 
         # Select a color based on the index (cycling through the color list)
         color = colors[i % len(colors)]
-        
+
         # Draw a rectangle outline (border) around the bounding box
-        cv2.rectangle(image, (x, y), (x + bbox_width, y + bbox_height), color, thickness=3)
+        cv2.rectangle(image, (x, y), (x + bbox_width, y +
+                      bbox_height), color, thickness=3)
 
     # Save or display the image with the outlines
     cv2.imwrite(output_path, image)
     print(f"Image with bounding boxes saved as {output_path}.")
     return output_path
+
 
 # Example usage
 bboxes = [
@@ -121,6 +126,6 @@ bboxes = [
     # Add more bounding boxes as needed
 ]
 
-# draw_bounding_boxes_with_outline('output_file_1.png', 
-#                                  bboxes, 
+# draw_bounding_boxes_with_outline('output_file_1.png',
+#                                  bboxes,
 #                                  'output_file.png')

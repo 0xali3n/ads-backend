@@ -47,7 +47,7 @@ class S3Operations():
         except Exception as e:
             raise RuntimeError(f"Error retrieving object from S3: {str(e)}")
 
-    def upload_object(self, object_key: str, file_path: str, bucket_name=AWS_BUCKET_NAME) -> None:
+    def upload_object(self, object_key: str, file_path: str, bucket_name=AWS_BUCKET_NAME) -> str:
         # Convert to absolute path if it's not already
         abs_file_path = os.path.abspath(file_path)
 
@@ -60,6 +60,8 @@ class S3Operations():
             s3.upload_file(abs_file_path, bucket_name, object_key)
             print(
                 f"Successfully uploaded {abs_file_path} to {bucket_name}/{object_key}")
+            img_url = f"https://{bucket_name}.s3.{AWS_REGION_NAME}.amazonaws.com/{object_key}"
+            return img_url
         except Exception as e:
             raise RuntimeError(f"Error uploading file to S3: {str(e)}")
 

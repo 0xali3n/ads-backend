@@ -1,8 +1,8 @@
 from flask import Flask, jsonify, request
+from src.flow_after_imagegen import flow
 from src.gemini_utils import gemini_for_chatbot, get_gemini_response
 from src.imagen import get_imagen_images
 from src.prompts import CAPTION_PROMPT, get_imagen_stage_prompt
-from src.flow_after_imagegen import flow
 
 app = Flask(__name__)
 
@@ -18,7 +18,8 @@ def home():
 )
 def initial_prompt():
     data = request.get_json()
-    image_path = data.get('image_path')
+    image_path = data.get(
+        'image_path', "/home/sohamr/projects/genai-hack/final/gen-ai-hacks-backend/imgs/amul.jpeg")
 
     # get example image from s3
     # store it at "image_path" if s3 link doesn't work
@@ -62,11 +63,12 @@ def initial_prompt():
 
     # response3 = get_gemini_response(prompt3)
 
-    get_imagen_images(prompt3)
+    resp = get_imagen_images(prompt3)
+    images = resp['images']
 
-    #to be called for final json array of all generated images flow(images,product_images,user_gen_id) (generated_imgs_urls,product_images,user_gen_id)
-    
-    return jsonify({'message': 'Initial prompt received', 'image_path': image_path, 'response': response, 'response2': response2, 'final_prompt': prompt3})
+    # to be called for final json array of all generated images flow(images,product_images,user_gen_id) (generated_imgs_urls,product_images,user_gen_id)
+
+    return jsonify({'message': 'Initial prompt received', 'image_path': image_path, 'response': response, 'response2': response2, 'final_prompt': prompt3, 'images': images})
 
     # return jsonify({'message': 'Image path received', 'image_path': image_path, 'response': response})
 
