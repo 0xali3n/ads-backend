@@ -4,7 +4,7 @@ from sklearn.cluster import KMeans
 from collections import Counter
 import matplotlib.pyplot as plt
 
-def extract_color_palette(image_path, num_colors=8):
+def extract_color_palette(image_path, num_colors=5):
     # Load the image
     image = cv2.imread(image_path)
     if image is None:
@@ -34,6 +34,7 @@ def extract_color_palette(image_path, num_colors=8):
     
     # Normalize the color percentages (optional, just for visualization)
     color_percentages = [count / len(labels) for _, count in sorted_colors]
+    print(color_palette)
 
     return color_palette, color_percentages
 
@@ -44,13 +45,13 @@ def plot_color_palette(color_palette, color_percentages):
     plt.show()
 
 # Example usage
-image_path = 'output_file_2.png'
-color_palette, color_percentages = extract_color_palette(image_path, num_colors=5)
+# image_path = 'generatedImages\output_file_3.png'
+# color_palette, color_percentages = extract_color_palette(image_path, num_colors=5)
 
 # Display the color palette with their percentages
-print("Extracted Color Palette (sorted by percentage):")
-for i, (color, percentage) in enumerate(zip(color_palette, color_percentages)):
-    print(f"Color {i+1}: {color}, Percentage: {percentage:.2%}")
+# print("Extracted Color Palette (sorted by percentage):")
+# for i, (color, percentage) in enumerate(zip(color_palette, color_percentages)):
+#     print(f"Color {i+1}: {color}, Percentage: {percentage:.2%}")
 
 # # Plot the palette
 # plot_color_palette(color_palette, color_percentages)
