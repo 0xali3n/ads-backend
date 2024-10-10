@@ -72,3 +72,50 @@ def crop_image_with_bbox(image_path, bbox, output_path):
 # crop_image_with_bbox('base_image.jpg', 
 #                      bbox, 
 #                      'cropped_output.jpg')
+
+
+import cv2
+
+def draw_bounding_boxes_with_outline(image_path, bboxes, output_path):
+    # Load the image
+    image = cv2.imread(image_path)
+    if image is None:
+        print(f"Error: Unable to load image at {image_path}. Check the file path.")
+        return
+
+    # Define a set of colors for each product (RGB)
+    colors = [
+        (0, 255, 0),    # Green
+        (0, 0, 255),    # Red
+        (255, 0, 0),    # Blue
+        (0, 255, 255),  # Yellow
+        (255, 0, 255),  # Magenta
+        (255, 255, 0),  # Cyan
+        (255, 255, 255) # White
+    ]
+    
+    # Iterate over bounding boxes
+    for i, bbox in enumerate(bboxes):
+        x, y, bbox_width, bbox_height = bbox
+
+        # Select a color based on the index (cycling through the color list)
+        color = colors[i % len(colors)]
+        
+        # Draw a rectangle outline (border) around the bounding box
+        cv2.rectangle(image, (x, y), (x + bbox_width, y + bbox_height), color, thickness=3)
+
+    # Save or display the image with the outlines
+    cv2.imwrite(output_path, image)
+    print(f"Image with bounding boxes saved as {output_path}.")
+
+# Example usage
+bboxes = [
+    (100, 50, 200, 150),   # Bounding box 1 (x, y, width, height)
+    (300, 200, 100, 150),  # Bounding box 2
+    (500, 100, 150, 200),  # Bounding box 3
+    # Add more bounding boxes as needed
+]
+
+# draw_bounding_boxes_with_outline('output_file_1.png', 
+#                                  bboxes, 
+#                                  'output_file.png')
