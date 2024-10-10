@@ -1,5 +1,5 @@
 from flask import Flask, jsonify, request
-from src.gemini_utils import get_gemini_response
+from src.gemini_utils import gemini_for_chatbot, get_gemini_response
 from src.imagen import get_imagen_images
 from src.prompts import CAPTION_PROMPT, get_imagen_stage_prompt
 
@@ -66,6 +66,33 @@ def initial_prompt():
     return jsonify({'message': 'Initial prompt received', 'image_path': image_path, 'response': response, 'response2': response2, 'final_prompt': prompt3})
 
     # return jsonify({'message': 'Image path received', 'image_path': image_path, 'response': response})
+
+
+@app.route(
+    '/chat-bot',
+    methods=['POST']
+)
+def get_completions():
+    data = request.get_json()
+    prompt = data.get('prompt', "")
+    history = data.get('history', [])
+    is_image = data.get('is_image', False)
+
+    response = gemini_for_chatbot(prompt, history, is_image)
+
+    if is_image:
+        images = get_imagen_images(response, 1)
+
+        return jsonify({
+            'message': 'Chatbot response received',
+            'response': response,
+            'image': images[0]
+        })
+    else:
+        return jsonify({
+            'message': 'Chatbot response received',
+            'response': response
+        })
 
 
 if __name__ == '__main__':

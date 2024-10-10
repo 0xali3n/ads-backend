@@ -55,3 +55,30 @@ def get_gemini_response(prompt: str, img_path: str = "", is_initial_prompt: bool
             }
     else:
         return response.text
+
+
+def gemini_for_chatbot(current_prompt: str, history: list[str] = [], require_image: bool = False):
+
+    generation_config = {
+        "temperature": 1,
+        "top_p": 0.95,
+        "top_k": 64,
+        "max_output_tokens": 8192,
+        "response_mime_type": "text/plain",
+    }
+
+    model = genai.GenerativeModel(model_name="gemini-1.5-flash",
+                                  generation_config=generation_config)
+    prompt_parts = ""
+    if require_image:
+        prompt_parts = f"""Generate an image which is clearly related to the following description: {current_prompt}"""
+    else:
+        prompt_parts = f"""{current_prompt}"""
+
+    chat_session = model.start_chat(
+        history=[],
+    )
+
+    response = chat_session.send_message(prompt_parts)
+
+    return response.text

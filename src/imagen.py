@@ -11,7 +11,7 @@ load_dotenv()
 os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
 
 
-def get_imagen_images(prompt):
+def get_imagen_images(prompt, number=4):
     try:
 
         vertexai.init(project=PROJECT_ID, location="us-central1")
@@ -38,15 +38,16 @@ def get_imagen_images(prompt):
         )
 
         print("Images generated")
+        print("Images: ", images)
 
-        # images[0].save(location="output_file_festival_holi_1.png",
-        #                include_generation_parameters=False)
-        # images[1].save(location="output_file_festival_holi_2.png",
-        #                include_generation_parameters=False)
-        # images[2].save(location="output_file_festival_holi_3.png",
-        #                include_generation_parameters=False)
-        # images[3].save(location="output_file_festival_holi__4.png",
-        #                include_generation_parameters=False)
+        images[0].save(location="output_file_festival_hfddsoli_1.png",
+                       include_generation_parameters=False)
+        images[1].save(location="output_file_festival_hodsvsli_2.png",
+                       include_generation_parameters=False)
+        images[2].save(location="output_file_festival_hozfzli_3.png",
+                       include_generation_parameters=False)
+        images[3].save(location="output_file_festival_hofsdli__4.png",
+                       include_generation_parameters=False)
 
         # Optional. View the generated image in a notebook.
         # images[0].show()
