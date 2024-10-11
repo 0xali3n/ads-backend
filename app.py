@@ -18,18 +18,27 @@ def home():
 )
 def initial_prompt():
     data = request.get_json()
-    image_path = data.get(
-        'image_path', "/home/sohamr/projects/genai-hack/final/gen-ai-hacks-backend/imgs/amul.jpeg")
-
+    print(data)
+    image_paths = data.get(
+        'images', ["/home/sohamr/projects/genai-hack/final/gen-ai-hacks-backend/imgs/amul.jpeg"])
+    colors_used = data.get('colors_pallete', [])
+    offer = data.get('offer', "15% off")
+    theme = data.get('theme', "Holi")
     # get example image from s3
     # store it at "image_path" if s3 link doesn't work
 
-    if not image_path:
+    print(f"Image paths: {image_paths}")
+    print(f"Colors used: {colors_used}")
+    print(f"Offer: {offer}")
+    print(f"Theme: {theme}")
+    print("____________-----------------______________")
+
+    if not image_paths:
         return jsonify({'error': 'Image path is required'}), 400
 
     prompt = CAPTION_PROMPT
 
-    response = get_gemini_response(prompt, image_path, is_initial_prompt=True)
+    response = get_gemini_response(prompt, image_paths, is_initial_prompt=True)
 
     print("Recieved initial prompt response")
 
@@ -39,21 +48,21 @@ def initial_prompt():
 
     stage_1_prompt = get_imagen_stage_prompt(
         color_scheme=colors_used,  # from request body.colors_pallete + colors_used
-        offer="15% off",  # from request body
-        theme="Holi",  # from request body
+        offer=offer,  # from request body
+        theme=theme,  # from request body
         product_name=product_name,
         product_description=product_description,
         stage=1
     )
 
-    response2 = get_gemini_response(stage_1_prompt)
+    response2 = get_gemini_response(stage_1_prompt, images=[])
 
     prompt3 = get_imagen_stage_prompt(
         color_scheme=colors_used,
         product_name=product_name,
         product_description=response2,
-        offer="15% off",
-        theme="Holi",
+        offer=offer,
+        theme=theme,
         user_target="families",
         user_prompt="a playful, vibrant design",
         stage=2,
@@ -68,7 +77,7 @@ def initial_prompt():
 
     # to be called for final json array of all generated images flow(images,product_images,user_gen_id) (generated_imgs_urls,product_images,user_gen_id)
 
-    return jsonify({'message': 'Initial prompt received', 'image_path': image_path, 'response': response, 'response2': response2, 'final_prompt': prompt3, 'images': images})
+    return jsonify({'message': 'Initial prompt received', 'response': response, 'response2': response2, 'final_prompt': prompt3, 'images': images})
 
     # return jsonify({'message': 'Image path received', 'image_path': image_path, 'response': response})
 
@@ -86,12 +95,12 @@ def get_completions():
     response = gemini_for_chatbot(prompt, history, is_image)
 
     if is_image:
-        images = get_imagen_images(response, 1)
-
+        images = get_imagen_images(response, 2)
+        print("Images: ", images)
         return jsonify({
             'message': 'Chatbot response received',
             'response': response,
-            'image': images[0]
+            'image': images["images"][0]
         })
     else:
         return jsonify({

@@ -1,8 +1,10 @@
 import json
 import os
+from io import BytesIO
 
 import google.generativeai as genai
 import PIL.Image
+import requests
 from dotenv import load_dotenv
 from google.ai.generativelanguage_v1beta.types import content
 
@@ -11,7 +13,7 @@ load_dotenv()
 genai.configure(api_key=os.environ.get("GEMINI_API_KEY"))
 
 
-def get_gemini_response(prompt: str, img_path: str = "", is_initial_prompt: bool = False):
+def get_gemini_response(prompt: str, images: list[str], is_initial_prompt: bool = False):
     generation_config = {
         "temperature": 0.4,
         "top_p": 1,
@@ -22,17 +24,18 @@ def get_gemini_response(prompt: str, img_path: str = "", is_initial_prompt: bool
 
     model = genai.GenerativeModel(model_name="gemini-1.5-flash",
                                   generation_config=generation_config)
-    prompt_parts = []
-    if img_path != "":
-        img = PIL.Image.open(img_path)
-        prompt_parts = [
-            f"""{prompt}""", img
-        ]
-
-    else:
-        prompt_parts = [
-            f"""{prompt}"""
-        ]
+    prompt_parts = [prompt]
+    for img_path in images:
+        if img_path != "":
+            response = requests.get(img_path)
+            img = PIL.Image.open(BytesIO(response.content))
+            prompt_parts.append(
+                img
+            )
+    # else:
+    #     prompt_parts = [
+    #         f"""{prompt}"""
+    #     ]
 
     response = model.generate_content(prompt_parts)
 
