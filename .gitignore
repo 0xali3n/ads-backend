@@ -4,3 +4,12 @@ venv
 imagen.json
 gen-ai-hacs-1b413d8db695.json
 .env.example
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.development
+.env.test
+gen-ai-hacs-*.json
+.env
+.env.example
