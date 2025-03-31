@@ -2,3 +2,7 @@ wordllama
 python-dotenv
 google-generativeai
 Pillow
+opencv-python
+boto3
+requests
+scikit-learn

@@ -1,10 +1,12 @@
 from flask import Flask, jsonify, request
+from flask_cors import CORS
 from src.flow_after_imagegen import flow
 from src.gemini_utils import gemini_for_chatbot, get_gemini_response
 from src.imagen import get_imagen_images
 from src.prompts import CAPTION_PROMPT, get_imagen_stage_prompt
 
 app = Flask(__name__)
+CORS(app) 
 
 
 @app.route('/')
@@ -70,14 +72,31 @@ def initial_prompt():
 
     print("Got final prompt")
 
-    # response3 = get_gemini_response(prompt3)
-
-    resp = get_imagen_images(prompt3)
-    images = resp['images']
+    try:
+        resp = get_imagen_images(prompt3)
+        if resp.get('success'):
+            images = resp.get('images', [])
+        else:
+            return jsonify({
+                'error': 'Failed to generate images',
+                'message': resp.get('message', 'Unknown error')
+            }), 500
+    except Exception as e:
+        print(f"Error generating images: {e}")
+        return jsonify({
+            'error': 'Failed to generate images',
+            'message': str(e)
+        }), 500
 
     # to be called for final json array of all generated images flow(images,product_images,user_gen_id) (generated_imgs_urls,product_images,user_gen_id)
 
-    return jsonify({'message': 'Initial prompt received', 'response': response, 'response2': response2, 'final_prompt': prompt3, 'images': images})
+    return jsonify({
+        'message': 'Initial prompt received', 
+        'response': response, 
+        'response2': response2, 
+        'final_prompt': prompt3, 
+        'images': images
+    })
 
     # return jsonify({'message': 'Image path received', 'image_path': image_path, 'response': response})
 

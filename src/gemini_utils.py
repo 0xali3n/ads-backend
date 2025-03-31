@@ -27,11 +27,18 @@ def get_gemini_response(prompt: str, images: list[str], is_initial_prompt: bool 
     prompt_parts = [prompt]
     for img_path in images:
         if img_path != "":
+            print(f"Fetching image from: {img_path}")
             response = requests.get(img_path)
-            img = PIL.Image.open(BytesIO(response.content))
-            prompt_parts.append(
-                img
-            )
+            print(f"Response status code: {response.status_code}")
+            print(f"Response content type: {response.headers.get('content-type')}")
+            print(f"Response content length: {len(response.content)}")
+            try:
+                img = PIL.Image.open(BytesIO(response.content))
+                prompt_parts.append(img)
+            except Exception as e:
+                print(f"Error processing image: {e}")
+                print(f"Response content: {response.content[:100]}")  # Print first 100 bytes
+                raise
     # else:
     #     prompt_parts = [
     #         f"""{prompt}"""

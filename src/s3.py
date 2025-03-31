@@ -12,6 +12,10 @@ AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
 AWS_REGION_NAME = os.getenv("AWS_REGION_NAME")
 AWS_BUCKET_NAME = os.getenv("AWS_BUCKET_NAME")
 
+# Debug logging
+print(f"AWS Region: {AWS_REGION_NAME}")
+print(f"AWS Bucket: {AWS_BUCKET_NAME}")
+
 # Create a session using your credentials
 session = boto3.Session(
     aws_access_key_id=AWS_ACCESS_KEY_ID,
@@ -57,7 +61,12 @@ class S3Operations():
                 f"The file {abs_file_path} does not exist.")
 
         try:
-            s3.upload_file(abs_file_path, bucket_name, object_key)
+            # Upload without ACL since we're using bucket owner enforced mode
+            s3.upload_file(
+                abs_file_path, 
+                bucket_name, 
+                object_key
+            )
             print(
                 f"Successfully uploaded {abs_file_path} to {bucket_name}/{object_key}")
             img_url = f"https://{bucket_name}.s3.{AWS_REGION_NAME}.amazonaws.com/{object_key}"
@@ -109,7 +118,15 @@ my_s3 = S3Operations()
 #     print(f"An error occurred during upload: {e}")
 
 try:
-    file = my_s3.get_all_objects('gen-ai-hacks')
+    # First check if bucket exists
+    buckets = my_s3.get_all_bucket_names()
+    if AWS_BUCKET_NAME not in buckets:
+        print(f"Creating bucket {AWS_BUCKET_NAME}...")
+        my_s3.create_bucket(AWS_BUCKET_NAME)
+        print(f"Bucket {AWS_BUCKET_NAME} created successfully")
+    
+    # Now try to get objects
+    file = my_s3.get_all_objects(AWS_BUCKET_NAME)
     print(f"got the file: {file}")
 
 #     # image_data = file['Body'].read()
@@ -126,3 +143,5 @@ except ValueError as e:
     print(f"Object not found: {e}")
 except RuntimeError as e:
     print(f"An error occurred during retrieval: {e}")
+except Exception as e:
+    print(f"An unexpected error occurred: {e}")

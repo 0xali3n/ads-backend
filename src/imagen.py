@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 from src.s3 import S3Operations
 from vertexai.preview.vision_models import ImageGenerationModel
 
-PROJECT_ID = "edit-ai-prod"
+PROJECT_ID = "gen-ai-hacs"
 
 load_dotenv()
 
@@ -35,8 +35,7 @@ def get_imagen_images(prompt, number=4):
             # add_watermark=False,
             # seed=100,
             aspect_ratio="1:1",
-            safety_filter_level="block_some",
-            person_generation="allow_adult",
+            safety_filter_level="block_some"
         )
 
         print("Images generated")

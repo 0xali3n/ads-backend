@@ -1,11 +1,35 @@
 import cv2
 import numpy as np
 from PIL import Image
+import requests
+from io import BytesIO
+import os
+from src.s3 import S3Operations
+
+
+def download_image_from_url(url):
+    try:
+        response = requests.get(url)
+        if response.status_code == 200:
+            return Image.open(BytesIO(response.content))
+        else:
+            raise Exception(f"Failed to download image from {url}")
+    except Exception as e:
+        print(f"Error downloading image: {e}")
+        return None
 
 
 def embed_images_within_bboxes(base_image_path, embedding_image_paths, bboxes, user_gen_id):
     # Load base image
-    base_image = cv2.imread(base_image_path)
+    if base_image_path.startswith('http'):
+        base_image = download_image_from_url(base_image_path)
+        if base_image is None:
+            raise Exception("Failed to download base image")
+        base_image = cv2.cvtColor(np.array(base_image), cv2.COLOR_RGB2BGR)
+    else:
+        base_image = cv2.imread(base_image_path)
+        if base_image is None:
+            raise Exception(f"Failed to load base image from {base_image_path}")
 
     # Determine the minimum number of pairs to process
     num_pairs = min(len(embedding_image_paths), len(bboxes))
@@ -16,7 +40,12 @@ def embed_images_within_bboxes(base_image_path, embedding_image_paths, bboxes, u
         bbox = bboxes[i]
 
         # Load the embedding image
-        embedding_image = Image.open(embedding_image_path)
+        if embedding_image_path.startswith('http'):
+            embedding_image = download_image_from_url(embedding_image_path)
+            if embedding_image is None:
+                raise Exception("Failed to download embedding image")
+        else:
+            embedding_image = Image.open(embedding_image_path)
 
         # Bounding box coordinates (x, y, width, height)
         x, y, bbox_width, bbox_height = bbox
