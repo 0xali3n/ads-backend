@@ -2,3 +2,5 @@ venv
 .env
 .venv
 imagen.json
+gen-ai-hacs-1b413d8db695.json
+.env.example
