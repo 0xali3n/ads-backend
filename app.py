@@ -71,7 +71,8 @@ def initial_prompt():
     )
 
     print("Got final prompt")
-
+    print("thos is the prompt3",prompt3)
+    
     try:
         resp = get_imagen_images(prompt3)
         if resp.get('success'):
